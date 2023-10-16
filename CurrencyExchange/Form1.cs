@@ -8,7 +8,7 @@ namespace CurrencyExchange
         public Form1()
         {
             InitializeComponent();
-            string path = @"D:\VS_Repos\CurrencyExchange\CurrencyExchange\exchange.json";
+            string path = @"your path to exchange.json";
             var jsonData = File.ReadAllText(path);
             deserialized = JsonConvert.DeserializeObject<List<Currency>>(jsonData);
         }
@@ -26,7 +26,7 @@ namespace CurrencyExchange
             double amount;
             if (!double.TryParse(Amount_textbox.Text, out amount))
             {
-                MessageBox.Show("Введіть правильне число, без сторонніх символів", "Error", MessageBoxButtons.OK);
+                MessageBox.Show("Г‚ГўГҐГ¤ВіГІГј ГЇГ°Г ГўГЁГ«ГјГ­ГҐ Г·ГЁГ±Г«Г®, ГЎГҐГ§ Г±ГІГ®Г°Г®Г­Г­ВіГµ Г±ГЁГ¬ГўГ®Г«ВіГў", "Error", MessageBoxButtons.OK);
                 return;
             }
 
@@ -37,7 +37,7 @@ namespace CurrencyExchange
             }
             catch
             {
-                MessageBox.Show("Непередбачувана помилка. Спробуйте ще раз", "Error", MessageBoxButtons.OK);
+                MessageBox.Show("ГЌГҐГЇГҐГ°ГҐГ¤ГЎГ Г·ГіГўГ Г­Г  ГЇГ®Г¬ГЁГ«ГЄГ . Г‘ГЇГ°Г®ГЎГіГ©ГІГҐ Г№ГҐ Г°Г Г§", "Error", MessageBoxButtons.OK);
                 return;
             }
 
