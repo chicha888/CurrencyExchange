@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System.Net;
 
 namespace CurrencyExchange
 {
@@ -8,7 +9,14 @@ namespace CurrencyExchange
         public Form1()
         {
             InitializeComponent();
-            string path = @"your path to exchange.json";
+            string path = @"..\..\exchange.json";
+            var readData = new WebClient().DownloadString("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json");
+
+            using (var writeData = new StreamWriter(path))
+            {
+                writeData.Write(readData);
+            }
+
             var jsonData = File.ReadAllText(path);
             deserialized = JsonConvert.DeserializeObject<List<Currency>>(jsonData);
         }
@@ -26,7 +34,7 @@ namespace CurrencyExchange
             double amount;
             if (!double.TryParse(Amount_textbox.Text, out amount))
             {
-                MessageBox.Show("Ââåä³òü ïðàâèëüíå ÷èñëî, áåç ñòîðîíí³õ ñèìâîë³â", "Error", MessageBoxButtons.OK);
+                MessageBox.Show("Enter the correct number, without extraneous characters", "Error", MessageBoxButtons.OK);
                 return;
             }
 
@@ -37,20 +45,29 @@ namespace CurrencyExchange
             }
             catch
             {
-                MessageBox.Show("Íåïåðåäáà÷óâàíà ïîìèëêà. Ñïðîáóéòå ùå ðàç", "Error", MessageBoxButtons.OK);
+                MessageBox.Show("Unexpected error. Try again.", "Error", MessageBoxButtons.OK);
                 return;
             }
 
             double convertedAmount = amount * exchangeRate;
 
-            Converted_label.Text = $"Converted amount: {convertedAmount} {toCurrency}";
+            Converted_label.Text = $"Converted amount: {convertedAmount.ToString("0.00000")} {toCurrency}";
             ConversionRate_label.Text = $"Conversion rate: 1 {fromCurrency} = {exchangeRate} {toCurrency}";
         }
 
         private double GetExchangeRate(string fromCurrency, string toCurrency)
         {
-            var rateFrom = deserialized.Where(r => r.cc == fromCurrency).Select(r => r.rate).First();
-            var rateTo = deserialized.Where(r => r.cc == toCurrency).Select(r => r.rate).First();
+            double rateFrom;
+            if (fromCurrency == "UAH")
+                rateFrom = 1;
+            else
+                rateFrom = deserialized.Where(r => r.cc == fromCurrency).Select(r => r.rate).First();
+
+            double rateTo;
+            if(toCurrency == "UAH")
+                rateTo = 1; 
+            else
+                rateTo = deserialized.Where(r => r.cc == toCurrency).Select(r => r.rate).First();
 
             double exchangeRate = rateFrom / rateTo;
             string exchangeRateString = exchangeRate.ToString("0.00000");
